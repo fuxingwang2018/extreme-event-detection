@@ -1,6 +1,7 @@
 import os, sys
 sys.path.insert(0, '..')
 from utils import file_reader
+from utils import ncdump
 
 class PreProcessing(object):
 
@@ -29,10 +30,11 @@ class PreProcessing(object):
 
         filereader = file_reader.FileReader(self.path_in + '/' + self.file_in)
         nc_file_in_id = filereader.Open_NC()
-        Nx, Ny, lons, lats, time = filereader.getDimensions_NC(nc_file_in_id)
-        varsOut = filereader.getParams_NC(nc_file_in_id, params = vars_name)
 
-        return varsOut
+        Nx, Ny, lons, lats, time = filereader.getDimensions_NC(nc_file_in_id)
+        varsOut = filereader.getParams_NC(nc_file_in_id, params = vars_name, close=True)
+        
+        return Nx, Ny, lons, lats, time, varsOut
 
 
     def get_data_for_evaluation(self, dt_start, dt_end):

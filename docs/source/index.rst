@@ -10,6 +10,11 @@ Welcome to Extreme-Event-Detection's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   intro
+   main
+   get_configuration
+   preprocessing
+   extreme_detection_algorithm
 
 
 Indices and tables

@@ -33,6 +33,9 @@ class Extreme_Detection_Algorithm(object):
             days_of_extreme: Days with extremes (e.g., have the largest sums/numbers of event)
         """
 
+        assert pctl_threshold > 0.0, "ERROR: negative pctl_threshold"
+        assert perc_of_days > 0.0,   "ERROR: negative perc_of_days"
+
         # Finds candidate extreme events at each grid point and day as values larger than the threshold 
         var_pctl = (self.var_in >= np.percentile(self.var_in, pctl_threshold))
 

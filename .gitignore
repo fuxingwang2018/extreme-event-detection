@@ -1,5 +1,6 @@
 *~
 __pycache__
+.pytest_cache
 docs/build
 docs/source/_static
 docs/source/_templates

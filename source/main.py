@@ -21,7 +21,7 @@ def main():
     dt_end = ''
     vars_name = ['tas']
     preproc = preprocessing.PreProcessing(path_in, file_in)
-    varsOut = preproc.get_data_for_detection(dt_start, dt_end, vars_name)
+    Nx, Ny, lons, lats, time, varsOut = preproc.get_data_for_detection(dt_start, dt_end, vars_name)
 
     """ 
     extreme_detection = extreme_detection_algorithm.Extreme_Detection_Algorithm(algorithm, var)
