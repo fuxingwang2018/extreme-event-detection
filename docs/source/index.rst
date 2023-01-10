@@ -8,9 +8,18 @@ Welcome to Extreme-Event-Detection's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Tutorials:
 
-   intro
+   installation
+
+
+Codes
+=====
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Codes:
+
    main
    get_configuration
    preprocessing
