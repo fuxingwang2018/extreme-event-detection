@@ -24,13 +24,13 @@ class Extreme_Detection_Algorithm(object):
         """
         Detection of extreme convective precipitation events from a coarse model (e.g. GCM)
 
-        Args:
-            var_in:          Input variable values
-            pctl_threshold:  Pre-defined N-th percentile (e.g. N = 95) for the entire chosen (sub)domain and time period
-            perc_of_days:    Percentage (e.g. 10%) of the days with the largest cr_sum as the potential events of interest (extreme events) to downscale them
+        :param pctl_threshold: Pre-defined N-th percentile (e.g. N = 95) for the entire chosen (sub)domain and time period
+        :type pctl_threshold: integer
+        :param perc_of_days: Percentage (e.g. 10%) of the days with the largest cr_sum as the potential events of interest (extreme events) to downscale them
+        :type perc_of_days: integer
+        :return: days_of_extreme.
+        :rtype: array.
 
-        Returns:
-            days_of_extreme: Days with extremes (e.g., have the largest sums/numbers of event)
         """
 
         assert pctl_threshold > 0.0, "ERROR: negative pctl_threshold"

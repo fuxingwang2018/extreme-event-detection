@@ -11,6 +11,14 @@ class FileReader(object):
         self.file_in = file_in
 
     def Read_TXT(self):
+        """
+        Function to read txt file.
+
+        :param file_in: string with full path to file
+        :type file_in: string
+        :return: Contents in the file: x, y
+        :rtype: 
+        """
         try:
             with open(self.file_in, 'r') as inFile:
                 lines = inFile.readlines()
@@ -26,11 +34,10 @@ class FileReader(object):
         """
         Function to open netcdf file.
 
-        Args:
-            filename:  string with full path to file
- 
-        Returns:
-            nc_file_in_id
+        :param file_in: string with full path to file
+        :type file_in: string
+        :return: nc_file_in_id
+        :rtype: object
         """
 
         try:
@@ -45,12 +52,12 @@ class FileReader(object):
         """ 
         Function to retrieve the dimensions of a netcdf file
 
-        Args:
-            nc: Netcdf object opened with function "openFile"
-            close: set True if you want the file to be closed after retrieval.
-
-        Returns:
-             lons and lats, time as well as gridsize Nx,Ny 
+        :param nc_file_in_id: Netcdf object opened with function "openFile"
+        :type nc_file_in_id: object
+        :param close: 'True' to close the file after retrieval; 'False' otherwise, default to 'False'.
+        :type close: Boolean
+        :return: lons, lats, time, gridsize Nx, Ny.
+        :rtype: 
         """
 
         try:
@@ -95,13 +102,14 @@ class FileReader(object):
         """ 
         Function to retrieve variables from a netcdf file
 
-        Args:        
-            nc: Netcdf object opened with function "openFile"
-            params: A list of strings with the parameters to be retrieved
-            close: set True if you want the file to be closed after retrieval.
-
-        Returns:
-            A list with the given parameters. 
+        :param nc_file_in_id: Netcdf object opened with function "openFile"
+        :type nc_file_in_id: object
+        :param params: A list of strings with the parameters to be retrieved
+        :type params: list
+        :param close: 'True' to close the file after retrieval; 'False' otherwise, default to 'False'.
+        :type close: Boolean
+        :return: A list with the given parameters.
+        :rtype: list.
         """
 
         # Make sure params is a list
