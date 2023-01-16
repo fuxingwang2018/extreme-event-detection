@@ -1,5 +1,5 @@
-utils
-=====
+Utilities
+=========
 
 .. toctree::
    :maxdepth: 4
@@ -7,5 +7,5 @@ utils
    file_reader
    file_writer
    ini_reader
-   ncdump
+   ncdump 
    statistics

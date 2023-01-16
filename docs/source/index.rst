@@ -8,22 +8,26 @@ Welcome to Extreme-Event-Detection's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Tutorials:
+   :caption: Tutorials
+   :hidden:
 
    installation
 
+.. toctree::
+   :maxdepth: 2
+   :caption: Introduction
+   :hidden:
 
-Codes
-=====
+   basic_algorithm
+   sophisticated_algorithm
 
 .. toctree::
    :maxdepth: 2
-   :caption: Codes:
+   :caption: Reference
+   :hidden:
 
-   main
-   get_configuration
-   preprocessing
-   extreme_detection_algorithm
+   api
+   bibliography
 
 
 Indices and tables

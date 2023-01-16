@@ -1,5 +1,5 @@
-Install
-=======
+Installation
+============
 
 Creating the Conda environment
 ------------------------------
@@ -10,14 +10,14 @@ Creating the Conda environment
 
 .. code-block:: bash
 
-    conda env create -f environment.yml
+   conda env create -f environment.yml
    
 
 4. Make sure that you see "extremedetection" in the output when you ask for a list of all available environments:
 
 .. code-block:: bash
 
-    conda env list
+   conda env list
 
 
 Activating the "extremedetection" environment
@@ -27,4 +27,4 @@ Run the following:
 
 .. code-block:: bash
 
-    conda activate extremedetection
+   conda activate extremedetection

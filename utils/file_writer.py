@@ -70,7 +70,7 @@ class FileWriter(object):
         # Even though we know the size, we are going to set the size to unknown
         data_dim = {}
         for dim in nc_dims_2d:
-            print 'dim:', dim
+            print('dim:', dim)
             w_nc_file_out_id.createDimension(dim, None)
             if dim in nc_file_2D_id.variables:
                 data_dim[dim] = w_nc_file_out_id.createVariable(dim, nc_file_2D_id.variables[dim].dtype,\
@@ -94,7 +94,7 @@ class FileWriter(object):
         # Constant variable
         for var in nc_vars_2d:
             if nam_lon in var or nam_lat in var:
-	        data_var[var] = w_nc_file_out_id.createVariable(var, nc_file_2D_id.variables[var].dtype,\
+                data_var[var] = w_nc_file_out_id.createVariable(var, nc_file_2D_id.variables[var].dtype,\
                                    nc_file_2D_id.variables[var].dimensions)
                 for ncattr in nc_file_2D_id.variables[var].ncattrs():
                     data_var[var].setncattr(ncattr, nc_file_2D_id.variables[var].getncattr(ncattr))
