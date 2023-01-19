@@ -129,3 +129,32 @@ class FileReader(object):
             nc_file_in_id.close()
 
         return np.array(varsOut).squeeze()
+
+
+
+    def get_np_file(self, params):
+
+        """ 
+        Function to retrieve variables from .npy, .npz or pickled files.
+
+        :param params: A list of strings with the parameters to be retrieved
+        :type params: list
+        :return: Data stored in the file.
+        :rtype: array, tuple, dict, etc.
+        """
+
+        if type(params) != list:
+            params = [params]
+
+        varsOut = []
+        for vv in range(len(params)):
+            try:
+                with np.load(self.file_in) as data:
+                    varsOut.append(data[vv])
+            except Exception:
+                print("*** Error ***")
+                print("Variable " + params[vv] + " not found in file!")
+                sys.exit()
+
+        return varsOut
+

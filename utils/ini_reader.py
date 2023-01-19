@@ -15,6 +15,11 @@ def _check_vals(item):
             'ABC' should return 'ABC'
     PARAMETERS: String (the value from a key/value pair)
     RETURNS   : type of evaluated string
+
+    :param item: Input config (.ini) file file
+    :type item: file
+    :return: A dictionary from the input config file.
+    :rtype: dict.
     """
 
     import ast
@@ -43,11 +48,16 @@ def _get_items(lst):
 
 
 def get_config_dict(ini_file):
+
     """
     Create a dictionary from then input config file.
-    PARAMETERS: config (.ini) file
-    RETURNS   : Dictionary
+
+    :param ini_file: Input config (.ini) file file
+    :type ini_file: file
+    :return: A dictionary from the input config file.
+    :rtype: dict.
     """
+
     import configparser
     # create a configparser object and read input file.
     config = configparser.ConfigParser()
