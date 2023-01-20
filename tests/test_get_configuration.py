@@ -1,5 +1,4 @@
 import os, sys
-sys.path.insert(0, '..')
 from source import get_configuration
 
 

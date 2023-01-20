@@ -1,7 +1,6 @@
 
 import sys
 from netCDF4 import Dataset 
-sys.path.insert(0, '..')
 from utils  import ncdump
 from source import preprocessing
 
