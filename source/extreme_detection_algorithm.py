@@ -4,7 +4,7 @@ import numpy.ma as ma
 sys.path.insert(0, '..')
 from utils import statistics
 
-class Extreme_Detection_Algorithm(object):
+class ExtremeDetectionAlgorithm(object):
 
     """
     Basic algorithms include:

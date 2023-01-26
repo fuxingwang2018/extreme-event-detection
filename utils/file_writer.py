@@ -13,7 +13,7 @@ class FileWriter(object):
         self.file_out = file_out
 
 
-    def Write_Txt(self, var_dict):
+    def write_txt(self, var_dict):
         try:
             with open(self.file_out, 'w') as outFile:
                 for key_lev1, value_lev1 in var_dict.items(): 
@@ -29,7 +29,7 @@ class FileWriter(object):
             sys.exit(2)
 
 
-    def Write_NC(self, nc_file_2D, nc_var_to_read, nc_vars_to_write, var_2D):
+    def write_nc(self, nc_file_2D, nc_var_to_read, nc_vars_to_write, var_2D):
 
         #nam_lon = 'longitude'
         #nam_lat = 'latitude'

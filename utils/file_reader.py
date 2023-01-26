@@ -10,7 +10,7 @@ class FileReader(object):
     def __init__(self, file_in):
         self.file_in = file_in
 
-    def Read_TXT(self):
+    def read_txt(self):
         """
         Function to read txt file.
 
@@ -30,7 +30,7 @@ class FileReader(object):
             sys.exit("Error - Please specify an input txt file.")
 
 
-    def Open_NC(self):
+    def open_nc(self):
         """
         Function to open netcdf file.
 
@@ -48,7 +48,7 @@ class FileReader(object):
             sys.exit("Error - Please specify an input NetCDF file.")
 
 
-    def getDimensions_NC(self, nc_file_in_id, close=False):
+    def getdimensions_nc(self, nc_file_in_id, close=False):
         """ 
         Function to retrieve the dimensions of a netcdf file
 
@@ -56,18 +56,18 @@ class FileReader(object):
         :type nc_file_in_id: object
         :param close: 'True' to close the file after retrieval; 'False' otherwise, default to 'False'.
         :type close: Boolean
-        :return: lons, lats, time, gridsize Nx, Ny.
+        :return: lons, lats, time, gridsize nx, ny.
         :rtype: 
         """
 
         try:
-            Nx = len(nc_file_in_id.dimensions['x'])
-            Ny = len(nc_file_in_id.dimensions['y'])
+            nx = len(nc_file_in_id.dimensions['x'])
+            ny = len(nc_file_in_id.dimensions['y'])
         except:
             print("File does not have 'x' and 'y' \
             dimensions. Returning None.")
-            Nx = None
-            Ny = None
+            nx = None
+            ny = None
 
         try:
             time = nc_file_in_id.variables['time'][:]
@@ -93,11 +93,11 @@ class FileReader(object):
         if close:
             nc_file_in_id.close()
 
-        return Nx, Ny, lons, lats, time
+        return nx, ny, lons, lats, time
 
 
 
-    def getParams_NC(self, nc_file_in_id, params, close=False):
+    def getparams_nc(self, nc_file_in_id, params, close=False):
 
         """ 
         Function to retrieve variables from a netcdf file
@@ -116,10 +116,10 @@ class FileReader(object):
         if type(params) != list:
             params = [params]
 
-        varsOut = []
+        varsout = []
         for vv in range(len(params)):
             try:
-                varsOut.append(nc_file_in_id.variables[params[vv]][:])
+                varsout.append(nc_file_in_id.variables[params[vv]][:])
             except Exception:
                 print("*** Error ***")
                 print("Variable " + params[vv] + " not found in file!")
@@ -128,7 +128,7 @@ class FileReader(object):
         if close:
             nc_file_in_id.close()
 
-        return np.array(varsOut).squeeze()
+        return np.array(varsout).squeeze()
 
 
 
@@ -146,15 +146,15 @@ class FileReader(object):
         if type(params) != list:
             params = [params]
 
-        varsOut = []
+        varsout = []
         for vv in range(len(params)):
             try:
                 with np.load(self.file_in) as data:
-                    varsOut.append(data[vv])
+                    varsout.append(data[vv])
             except Exception:
                 print("*** Error ***")
                 print("Variable " + params[vv] + " not found in file!")
                 sys.exit()
 
-        return varsOut
+        return varsout
 

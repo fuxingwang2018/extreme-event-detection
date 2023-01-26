@@ -10,21 +10,25 @@ def test_preprocessing():
     #path_in = '/nobackup/rossby24/proj/rossby/joint_exp/norcp/netcdf/NorCP_ALADIN_ECE_1985_2005/1hr/tas'
     file_in = 'sampledata.nc'
     path_in = 'tests/'
-    dt_start = ''
-    dt_end = ''
-    vars_name = ['tas']
 
 
+    #period_of_detection  = []
+    #coordinates_of_detection_area = {'lonmin':18, 'lonmax':19, 'latmin':59, 'latmax':60} 
+    variable_name_of_detection = ['tas']
     preproc = preprocessing.PreProcessing(path_in, file_in)
-    Nx, Ny, lons, lats, time, varsOut = preproc.get_data_for_detection(dt_start, dt_end, vars_name)
+    #data_used_for_detection = preproc.get_data_for_detection(period_of_detection, \
+    #    variable_name_of_detection, coordinates_of_detection_area)
+    nx, ny, lons, lats, time, varsout = preproc.get_rawdata(variable_name_of_detection)
+
+
 
     nc_file_in_id = Dataset(path_in + '/' + file_in, 'r')
     nc_attrs, nc_dims, nc_vars = ncdump.ncdump(nc_file_in_id)
 
     dims_mandatory = ['y', 'x', 'time']
     assert all(item in nc_dims for item in dims_mandatory)
-    assert Nx == len(nc_file_in_id.dimensions['x'])
-    assert Ny == len(nc_file_in_id.dimensions['y'])
+    assert nx == len(nc_file_in_id.dimensions['x'])
+    assert ny == len(nc_file_in_id.dimensions['y'])
     assert len(time) == len(nc_file_in_id.dimensions['time'])
 
     nc_file_in_id.close()
