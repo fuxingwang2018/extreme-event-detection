@@ -35,8 +35,10 @@ def get_settings(config_file):
         'obs months': conf_dict['OBS']['months'],
         'variables': conf_dict['SETTINGS']['variables'],
         'var modification': conf_dict['SETTINGS']['variable modification'],
-        'regions': conf_dict['SETTINGS']['regions'],
+        #'regions': conf_dict['SETTINGS']['regions'],
+        'coordinates_of_detection_area': conf_dict['SETTINGS']['coordinates_of_detection_area'], 
         'requested_stats': conf_dict['STATISTICS']['stats'],
+        'stats_conf': mod_stats_config(conf_dict['STATISTICS']['stats']),
         'validation plot': conf_dict['PLOTTING']['validation plot'],
         'map configure': conf_dict['PLOTTING']['map configure'],
         'map grid setup': conf_dict['PLOTTING']['map grid setup'],
@@ -48,9 +50,54 @@ def get_settings(config_file):
         'cluster kwargs': conf_dict['CLUSTER']['cluster kwargs'],
         'outdir': conf_dict['SETTINGS']['output dir'],
     }
-    #'stats_conf': st.mod_stats_config(conf_dict['STATISTICS']['stats']),
 
     return d
 
 
+def default_stats_config(stats):
+    """
+    Get default statistics configurations of stats
+
+    :param stats: A list of statistics
+    :type stats: List of strings
+    :return: A dictionary with default statistics configurations for a selection of statistics given by input stats
+    :rtype: dictionary
+    """
+    stats_dict = {
+        'threshold_based': {
+            'filter_method': 'percentile',
+            'pctl_threshold': 95,
+            'perc_of_days': 10, }
+            }
+
+    return {k: stats_dict[k] for k in stats}
+
+
+def mod_stats_config(requested_stats):
+    """
+    Get the configuration for the input statistics 'requested_stats'.
+
+    :param stats: A list of statistics
+    :type stats: List of strings
+    :return: A dictionary with modified statistics configurations for input requested_stats
+    :rtype: dictionary
+    """
+    stats_dd = default_stats_config(list(requested_stats.keys()))
+
+    # Update dictionary based on input
+    for k in requested_stats:
+        if requested_stats[k] == 'default':
+            pass
+        else:
+            for m in requested_stats[k]:
+                msg = "For statistic {}, the configuration key {} is not "\
+                        "available. Check possible configurations  in "\
+                        "default_stats_config in stats_template "\
+                        "module.".format(k, m)
+                try:
+                    stats_dd[k][m] = requested_stats[k][m]
+                except KeyError:
+                    print(msg)
+
+    return stats_dd
 

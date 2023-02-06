@@ -3,6 +3,7 @@ import os
 import extreme_detection_algorithm
 import get_configuration
 import preprocessing
+import numpy as np
 
 def main():
 
@@ -14,23 +15,34 @@ def main():
     if not os.path.isfile(config_file):
         raise ValueError(f"\nConfig file, '{config_file}', does not exist!")
     cdict = get_configuration.get_settings(config_file)
+    print ('var', cdict['variables'])
 
     #file_in = 'tas_NEU-12_ICHEC-EC-EARTH_historical_r12i1p1_HCLIMcom-HCLIM38-ALADIN_v1_1hr_198501010000-198512312300.nc'
     #path_in = '/nobackup/rossby24/proj/rossby/joint_exp/norcp/netcdf/NorCP_ALADIN_ECE_1985_2005/1hr/tas'
     file_in = 'sampledata.nc'
     path_in = '../tests'
     period_of_detection  = []
-    coordinates_of_detection_area = {'lonmin':18, 'lonmax':19, 'latmin':59, 'latmax':60} 
-    variable_name_of_detection = ['tas']
+    coordinates_of_detection_area = cdict['coordinates_of_detection_area']
+
+    variable_name_of_detection = list(cdict['variables'])
     preproc = preprocessing.PreProcessing(path_in, file_in)
     data_used_for_detection = preproc.get_data_for_detection(period_of_detection, \
         variable_name_of_detection, coordinates_of_detection_area)
+    #print('data_used_for_detection', type(data_used_for_detection), np.shape(data_used_for_detection))
 
-    """ 
-    extreme_detection = extreme_detection_algorithm.ExtremeDetectionAlgorithm(algorithm, var)
-    days_of_extreme_detected = extreme_detection.threshold_based_algorithm(filter_method, pctl_threshold, perc_of_days)
+    extreme_detection = extreme_detection_algorithm.ExtremeDetectionAlgorithm(data_used_for_detection)
+    for stats in cdict['stats_conf']:
+        print ('stats', stats)
+        if 'threshold_based' in stats:
+            days_of_extreme_detected = extreme_detection.threshold_based_algorithm(\
+                cdict['stats_conf'][stats]['filter_method'], \
+                cdict['stats_conf'][stats]['pctl_threshold'], \
+                cdict['stats_conf'][stats]['perc_of_days'])
+        #print('days_of_extreme_detected', type(days_of_extreme_detected), np.shape(days_of_extreme_detected))
+        print('days_of_extreme_detected:', np.where(days_of_extreme_detected)[0] + 1)
 
 
+    """
     Evaluation()
 
     PostProcessing()

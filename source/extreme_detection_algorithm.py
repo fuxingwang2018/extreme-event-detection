@@ -15,8 +15,8 @@ class ExtremeDetectionAlgorithm(object):
 
     """
 
-    def __init__(self, algorithm, var_in):
-        self.algorithm = algorithm
+    def __init__(self, var_in):
+        #self.algorithm = algorithm
         self.var_in = var_in
 
 
@@ -29,7 +29,7 @@ class ExtremeDetectionAlgorithm(object):
         :param perc_of_days: Percentage (e.g. 10%) of the days with the largest cr_sum as the potential events of interest (extreme events) to downscale them
         :type perc_of_days: integer
         :return: days_of_extreme.
-        :rtype: array.
+        :rtype: True/False masked array.
 
         """
 
