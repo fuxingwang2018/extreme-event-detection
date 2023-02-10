@@ -34,12 +34,12 @@ def main():
     for stats in cdict['stats_conf']:
         print ('stats', stats)
         if 'threshold_based' in stats:
-            days_of_extreme_detected = extreme_detection.threshold_based_algorithm(\
+            time_period_of_extreme_triggered, extreme_warning_level = extreme_detection.threshold_based_algorithm(\
                 cdict['stats_conf'][stats]['filter_method'], \
                 cdict['stats_conf'][stats]['pctl_threshold'], \
                 cdict['stats_conf'][stats]['perc_of_days'])
         #print('days_of_extreme_detected', type(days_of_extreme_detected), np.shape(days_of_extreme_detected))
-        print('days_of_extreme_detected:', np.where(days_of_extreme_detected)[0] + 1)
+        print('time_period_of_extreme_triggered, extreme_warning_level:', time_period_of_extreme_triggered, extreme_warning_level)
 
 
     """

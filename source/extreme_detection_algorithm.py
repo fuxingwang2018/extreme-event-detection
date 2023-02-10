@@ -35,16 +35,19 @@ class ExtremeDetectionAlgorithm(object):
 
         assert pctl_threshold > 0.0, "ERROR: negative pctl_threshold"
         assert perc_of_days > 0.0,   "ERROR: negative perc_of_days"
+        threshold_method = 'percentile'
 
-        # Finds candidate extreme events at each grid point and day as values larger than the threshold 
-        var_pctl = (self.var_in >= np.percentile(self.var_in, pctl_threshold))
-
+        # Finds potential extreme events over time step as values larger than the threshold 
         statis = statistics.Statistics(self.var_in)
-        statistics_daily = statis.get_statistics_daily(filter_method, var_pctl)
+        threshold_for_extreme = statis.extreme_threshold(threshold_method, pctl_threshold)
+        statistics_for_extremes = statis.extreme_statistics(threshold_for_extreme)
+        time_period_of_extreme_triggered = statis.extreme_triggering(filter_method, statistics_for_extremes, perc_of_days)
+        extreme_warning_level = statis.extreme_warning(statistics_for_extremes)
+        print('time_period_of_extreme_triggered', time_period_of_extreme_triggered)
+        print('extreme_warning_level', extreme_warning_level)
+        
+        return time_period_of_extreme_triggered, extreme_warning_level
 
-        days_of_extreme = (statistics_daily >= np.percentile(statistics_daily, 100 - perc_of_days))
-
-        return days_of_extreme
 
 
     def machine_learning_based_algorithm(self):
