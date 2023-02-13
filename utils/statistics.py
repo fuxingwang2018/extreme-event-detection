@@ -48,7 +48,7 @@ class Statistics(object):
 
         extreme_grids_mask = (self.var_ref >= threshold_for_extreme)
         extremes_filtered = ma.masked_array(self.var_ref, ~extreme_grids_mask)
-        # For each day, find grid points with var_in > threshold_for_extreme and adds them together to get a single value over the (sub)domain for all grid points
+        # For each day, find grid points with var_ref > threshold_for_extreme and adds them together to get a single value over the (sub)domain for all grid points
         accumulated_extreme_values = np.sum(extremes_filtered, axis = (1,2) if self.var_ref.ndim == 3 else 1)
         number_of_extreme_grids = np.sum(extreme_grids_mask, axis = (1,2))
         statistics_for_extremes = {

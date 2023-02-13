@@ -27,20 +27,20 @@ def adjust_coordinates(lon, lat, ngrids_relax_zone = 0, ngrids_exten_zone = 0):
     return lon_valid, lat_valid
 
 
-def get_data_over_target_domain(varin, lon_ld, lat_ld, coordinates_of_detection_area):
+def get_data_over_target_domain(var_ld, lon_ld, lat_ld, coordinates_of_detection_area):
     """
     Extract data from a larger domain over a smaller target domain
 
-    :param lon_ld: Longitudes for large domain
-    :type lon_ld: 2-dimension array, float
+    :param var_ld: Variable for large domain
+    :type var_ld: 3-dimension array (time, lat, lon), float
     :param lat_ld: Latitudes for large domain
-    :type lat_ld: 2-dimension array, float
+    :type lat_ld: 2-dimension array (lat, lon), float
     :param lon_sd: Longitudes for small domain
-    :type lon_sd: 2-dimension array, float
-    :param lat_sd: Latitudes for small domain
-    :type lat_sd: 2-dimension array, float
-    :return: The index for large domain corresponding to the small domain
-    :rtype: integer
+    :type lon_sd: 2-dimension array (lat, lon), float
+    :param coordinates_of_detection_area: 
+    :type coordinates_of_detection_area: dictionary, string
+    :return: var, lat and lon over target domain
+    :rtype: array
     """
 
     #lon_sd_min = lon_sd[0,0]
@@ -60,12 +60,19 @@ def get_data_over_target_domain(varin, lon_ld, lat_ld, coordinates_of_detection_
     ind_lat_ld_max = np.unravel_index(np.argmin(dif_max), lat_ld.shape)[0]
     ind_lon_ld_max = np.unravel_index(np.argmin(dif_max), lat_ld.shape)[1]
 
-    varout = varin[:, ind_lat_ld_min : ind_lat_ld_max + 1, \
+    print('var_ld', np.shape(var_ld))
+    print('lat_ld', np.shape(lat_ld))
+
+    var_over_target_domain = var_ld[:, ind_lat_ld_min : ind_lat_ld_max + 1, \
+                        ind_lon_ld_min : ind_lon_ld_max + 1]
+    lat_over_target_domain = lat_ld[ind_lat_ld_min : ind_lat_ld_max + 1, \
+                        ind_lon_ld_min : ind_lon_ld_max + 1]
+    lon_over_target_domain = lon_ld[ind_lat_ld_min : ind_lat_ld_max + 1, \
                         ind_lon_ld_min : ind_lon_ld_max + 1]
     #var_ld = varsout[:, ind_lat1_min + RelaxZone : ind_lat1_max + RelaxZone + 1, \
     #                ind_lon1_min + RelaxZone : ind_lon1_max + RelaxZone + 1]
 
-    return varout
+    return var_over_target_domain, lat_over_target_domain, lon_over_target_domain
 
 
 def get_data_over_target_period(varin, ):

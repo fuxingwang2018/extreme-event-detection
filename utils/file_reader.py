@@ -108,27 +108,28 @@ class FileReader(object):
         :type params: list
         :param close: 'True' to close the file after retrieval; 'False' otherwise, default to 'False'.
         :type close: Boolean
-        :return: A list with the given parameters.
-        :rtype: list.
+        :return: A dictionary of arrays with given parameters.
+        :rtype: dictionary.
         """
 
         # Make sure params is a list
         if type(params) != list:
             params = [params]
 
-        varsout = []
-        for vv in range(len(params)):
+        varsout = {}
+        for vv in params:
+            print('vv', type(vv), vv)
             try:
-                varsout.append(nc_file_in_id.variables[params[vv]][:])
+                varsout[vv] = nc_file_in_id.variables[vv][:]
             except Exception:
                 print("*** Error ***")
-                print("Variable " + params[vv] + " not found in file!")
+                print("Variable " + vv + " not found in file!")
                 sys.exit()
 
         if close:
             nc_file_in_id.close()
 
-        return np.array(varsout).squeeze()
+        return varsout
 
 
 

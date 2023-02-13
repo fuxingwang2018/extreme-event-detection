@@ -16,10 +16,10 @@ def test_preprocessing():
     #coordinates_of_detection_area = {'lonmin':18, 'lonmax':19, 'latmin':59, 'latmax':60} 
     variable_name_of_detection = ['tas']
     preproc = preprocessing.PreProcessing(path_in, file_in)
-    #data_used_for_detection = preproc.get_data_for_detection(period_of_detection, \
+    #data_for_detection = preproc.get_data_for_detection(period_of_detection, \
     #    variable_name_of_detection, coordinates_of_detection_area)
-    nx, ny, lons, lats, time, varsout = preproc.get_rawdata(variable_name_of_detection)
-
+    raw_data = preproc.get_rawdata(variable_name_of_detection)
+    #nx, ny, lons, lats, time, varsout = preproc.get_rawdata(variable_name_of_detection)
 
 
     nc_file_in_id = Dataset(path_in + '/' + file_in, 'r')
@@ -27,9 +27,9 @@ def test_preprocessing():
 
     dims_mandatory = ['y', 'x', 'time']
     assert all(item in nc_dims for item in dims_mandatory)
-    assert nx == len(nc_file_in_id.dimensions['x'])
-    assert ny == len(nc_file_in_id.dimensions['y'])
-    assert len(time) == len(nc_file_in_id.dimensions['time'])
+    assert raw_data['nx_in_rawdata'] == len(nc_file_in_id.dimensions['x'])
+    assert raw_data['ny_in_rawdata'] == len(nc_file_in_id.dimensions['y'])
+    assert len(raw_data['time_in_rawdata']) == len(nc_file_in_id.dimensions['time'])
 
     nc_file_in_id.close()
 

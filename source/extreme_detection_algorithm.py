@@ -15,12 +15,13 @@ class ExtremeDetectionAlgorithm(object):
 
     """
 
-    def __init__(self, var_in):
-        #self.algorithm = algorithm
-        self.var_in = var_in
+    def __init__(self, data_in):
+
+        self.data_in = data_in
 
 
-    def threshold_based_algorithm(self, filter_method, pctl_threshold, perc_of_days):
+    #def threshold_based_algorithm(self, filter_method, pctl_threshold, perc_of_days):
+    def threshold_based_algorithm(self, statistics_configure):
         """
         Detection of extreme convective precipitation events from a coarse model (e.g. GCM)
 
@@ -33,21 +34,27 @@ class ExtremeDetectionAlgorithm(object):
 
         """
 
-        assert pctl_threshold > 0.0, "ERROR: negative pctl_threshold"
-        assert perc_of_days > 0.0,   "ERROR: negative perc_of_days"
-        threshold_method = 'percentile'
+        assert statistics_configure['pctl_threshold'] > 0.0, "ERROR: negative pctl_threshold"
+        assert statistics_configure['perc_of_days'] > 0.0,   "ERROR: negative perc_of_days"
 
+        extreme_detected = {}
         # Finds potential extreme events over time step as values larger than the threshold 
-        statis = statistics.Statistics(self.var_in)
-        threshold_for_extreme = statis.extreme_threshold(threshold_method, pctl_threshold)
-        statistics_for_extremes = statis.extreme_statistics(threshold_for_extreme)
-        time_period_of_extreme_triggered = statis.extreme_triggering(filter_method, statistics_for_extremes, perc_of_days)
-        extreme_warning_level = statis.extreme_warning(statistics_for_extremes)
-        print('time_period_of_extreme_triggered', time_period_of_extreme_triggered)
-        print('extreme_warning_level', extreme_warning_level)
+        statis = statistics.Statistics(self.data_in['tas'])
+        threshold_for_extreme = statis.extreme_threshold( \
+            statistics_configure['threshold_method'], \
+            statistics_configure['pctl_threshold'])
+        extreme_detected['latitude']  = self.data_in['latitude']
+        extreme_detected['longitude'] = self.data_in['longitude']
+        extreme_detected['statistics_for_extremes'] = statis.extreme_statistics(threshold_for_extreme)
+        extreme_detected['time_period_of_extreme_triggered'] = \
+            statis.extreme_triggering( \
+            statistics_configure['filter_method'], \
+            extreme_detected['statistics_for_extremes'], \
+            statistics_configure['perc_of_days'] )
+        extreme_detected['extreme_warning_level'] = \
+            statis.extreme_warning(extreme_detected['statistics_for_extremes'])
         
-        return time_period_of_extreme_triggered, extreme_warning_level
-
+        return extreme_detected
 
 
     def machine_learning_based_algorithm(self):
