@@ -57,6 +57,16 @@ class ExtremeDetectionAlgorithm(object):
         return extreme_detected
 
 
+
     def machine_learning_based_algorithm(self):
 
         pass
+
+
+    def extreme_type(self):
+        extreme_name = { \
+            'tas': 'heatwave', \
+            'precipitaiton': 'extreme_precipitation', \
+            }
+        return extreme_name
+

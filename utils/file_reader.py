@@ -3,12 +3,20 @@ import datetime as dt  # Python standard library datetime  module
 from netCDF4 import Dataset  # http://code.google.com/p/netcdf4-python/
 import numpy as np
 import os, sys
+import xarray as xa
 
 class FileReader(object):
     """Reads a file"""
 
-    def __init__(self, file_in):
+    def __init__(self, file_in, method):
+        """
+        :param method: 'xarray' or 'netCDF4.Dataset'
+        :type method: string
+        """
+
         self.file_in = file_in
+        self.method = method        
+
 
     def read_txt(self):
         """
@@ -41,7 +49,10 @@ class FileReader(object):
         """
 
         try:
-            nc_file_in_id = Dataset(self.file_in, 'r')
+            if self.method == 'netCDF4.Dataset':
+                nc_file_in_id = Dataset(self.file_in, 'r')
+            elif self.method == 'xarray':
+                nc_file_in_id = xa.open_dataset(self.file_in)
             return nc_file_in_id
 
         except Exception:
@@ -61,8 +72,12 @@ class FileReader(object):
         """
 
         try:
-            nx = len(nc_file_in_id.dimensions['x'])
-            ny = len(nc_file_in_id.dimensions['y'])
+            if self.method == 'netCDF4.Dataset':
+                nx = len(nc_file_in_id.dimensions['x'])
+                ny = len(nc_file_in_id.dimensions['y'])
+            elif self.method == 'xarray':
+                nx = len(nc_file_in_id['x'].values)
+                ny = len(nc_file_in_id['y'].values)
         except:
             print("File does not have 'x' and 'y' \
             dimensions. Returning None.")
@@ -70,19 +85,30 @@ class FileReader(object):
             ny = None
 
         try:
-            time = nc_file_in_id.variables['time'][:]
+            if self.method == 'netCDF4.Dataset':
+                time = nc_file_in_id.variables['time'][:]
+            elif self.method == 'xarray':
+                time = nc_file_in_id['time'].values
         except:
             print("File does not have a 'time'"
               "variable. Returning None.")
             time = None
 
         try:
-            lons = nc_file_in_id.variables['lon'][:]
-            lats = nc_file_in_id.variables['lat'][:]
+            if self.method == 'netCDF4.Dataset':
+                lons = nc_file_in_id.variables['lon'][:]
+                lats = nc_file_in_id.variables['lat'][:]
+            elif self.method == 'xarray':
+                lons = nc_file_in_id['lon'].values
+                lats = nc_file_in_id['lat'].values
         except:
             try:
-                lons = nc_file_in_id.variables['longitude'][:]
-                lats = nc_file_in_id.variables['latitude'][:]
+                if self.method == 'netCDF4.Dataset':
+                    lons = nc_file_in_id.variables['longitude'][:]
+                    lats = nc_file_in_id.variables['latitude'][:]
+                elif self.method == 'xarray':
+                    lons = nc_file_in_id['longitude'].values
+                    lats = nc_file_in_id['latitude'].values
             except:
                 print("*** Error ***")
                 print("Could not extract longitudes/latitudes.")
@@ -90,7 +116,7 @@ class FileReader(object):
                   "and that they have standard names")
                 sys.exit()
 
-        if close:
+        if close and self.method == 'netCDF4.Dataset':
             nc_file_in_id.close()
 
         return nx, ny, lons, lats, time
@@ -120,13 +146,16 @@ class FileReader(object):
         for vv in params:
             print('vv', type(vv), vv)
             try:
-                varsout[vv] = nc_file_in_id.variables[vv][:]
+                if self.method == 'netCDF4.Dataset':
+                    varsout[vv] = nc_file_in_id.variables[vv][:]
+                elif self.method == 'xarray':
+                    varsout[vv] = nc_file_in_id[vv].values
             except Exception:
                 print("*** Error ***")
                 print("Variable " + vv + " not found in file!")
                 sys.exit()
 
-        if close:
+        if close and self.method == 'netCDF4.Dataset':
             nc_file_in_id.close()
 
         return varsout

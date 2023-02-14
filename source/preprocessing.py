@@ -28,7 +28,7 @@ class PreProcessing(object):
         :rtype: dictionary 
         """
 
-        filereader = file_reader.FileReader(self.path_in + '/' + self.file_in)
+        filereader = file_reader.FileReader(self.path_in + '/' + self.file_in, 'xarray')
         nc_file_in_id = filereader.open_nc()
 
         nx_in_rawdata, ny_in_rawdata, longitudes_in_rawdata, latitudes_in_rawdata, time_in_rawdata = \
