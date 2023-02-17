@@ -10,6 +10,7 @@ from matplotlib.patches import Polygon
 # 	     https://basemaptutorial.readthedocs.io/en/latest/subplots.html
 
 class PlotMap(object):
+
     def __init__(self, proj_def, res_def, 
 		width_def, height_def, lat_0_def, lon_0_def, nsubplot):
         self.proj_def = proj_def
@@ -121,7 +122,7 @@ class PlotMap(object):
 
 
     def plot_2dfield(self, lat, lon, var2d_to_plot, scale_min_def, scale_max_def, \
-        title_def, cmap_def, fontsize_def, icount):
+        title_def, cmap_def, fontsize_def, isubplot):
 
         #if np.array(lat).dim == 1 and np.array(lon).dim == 1:  
         #    lon, lat = np.meshgrid(lon, lat)
@@ -129,11 +130,11 @@ class PlotMap(object):
         #var2d_to_plot_mask = np.ma.masked_where(np.isnan(var2d_to_plot),var2d_to_plot)
 
         if self.nsubplot == 4:
-            ax = self.fig.add_subplot(2,2,icount) #(1,3,icount) (3,2,icount)
+            ax = self.fig.add_subplot(2,2,isubplot)
         elif self.nsubplot == 6:
-            ax = self.fig.add_subplot(3,2,icount) #(1,3,icount) (3,2,icount)
+            ax = self.fig.add_subplot(3,2,isubplot)
         elif self.nsubplot == 2:
-            ax = self.fig.add_subplot(1,2,icount) #(1,3,icount) (3,2,icount)
+            ax = self.fig.add_subplot(1,2,isubplot)
         self.plot_basemap()
 
         self.m.pcolormesh(lon, lat, var2d_to_plot,
@@ -184,3 +185,8 @@ class PlotMap(object):
         poly = Polygon( xy, edgecolor=edgecolor, linewidth=3, facecolor='none')
         plt.gca().add_patch(poly)
 
+
+    def get_scale(self, data):
+        #for key, value in data.items():
+            
+        pass

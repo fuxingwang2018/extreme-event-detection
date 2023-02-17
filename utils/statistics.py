@@ -42,8 +42,8 @@ class Statistics(object):
 
         :param threshold_for_extreme:  The threshold for extreme (N-th percentile (e.g. N = 95)) over each grid
         :type threshold_for_extreme: 2-D array
-        :return: potential_extreme_over_time, weather statistics for each time step
-        :rtype: 1-D array (time)
+        :return: statistics for extremes detected: extremes_filtered (3-d array), number_of_extreme_grids (1-d array), accumulated_extreme_values (1-d array)
+        :rtype: dictionary
         """
 
         extreme_grids_mask = (self.var_ref >= threshold_for_extreme)
@@ -52,6 +52,7 @@ class Statistics(object):
         accumulated_extreme_values = np.sum(extremes_filtered, axis = (1,2) if self.var_ref.ndim == 3 else 1)
         number_of_extreme_grids = np.sum(extreme_grids_mask, axis = (1,2))
         statistics_for_extremes = {
+            'extremes_filtered':          extremes_filtered,
             'number_of_extreme_grids':    number_of_extreme_grids,
             'accumulated_extreme_values': accumulated_extreme_values}
 

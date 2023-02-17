@@ -20,7 +20,6 @@ class ExtremeDetectionAlgorithm(object):
         self.data_in = data_in
 
 
-    #def threshold_based_algorithm(self, filter_method, pctl_threshold, perc_of_days):
     def threshold_based_algorithm(self, statistics_configure):
         """
         Detection of extreme convective precipitation events from a coarse model (e.g. GCM)
