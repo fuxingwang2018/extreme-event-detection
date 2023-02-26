@@ -1,8 +1,8 @@
 
 import os
-import extreme_detection_algorithm
-import get_configuration
-import preprocessing
+from exed.methods import optim_threshold
+from exed.preproc import get_configuration
+from exed.preproc import preprocessing
 
 def main():
 
@@ -38,4 +38,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

@@ -1,8 +1,8 @@
 
 import sys
 import os
-sys.path.insert(0, '..')
-from utils import ini_reader
+# sys.path.insert(0, '..')
+from preproc import ini_reader
 
 def get_args():
     """
@@ -28,16 +28,16 @@ def get_settings(config_file):
     """
     conf_dict = ini_reader.get_config_dict(config_file)
     d = {
-        'models': conf_dict['MODELS'],
-        'obs metadata file': conf_dict['OBS']['metadata file'],
-        'obs start year': conf_dict['OBS']['start year'],
-        'obs end year': conf_dict['OBS']['end year'],
-        'obs months': conf_dict['OBS']['months'],
+        'target data': conf_dict['INPUT DATA']['target data'],
+        'cont data': conf_dict['INPUT DATA']['contingency data'],
+        'start year': conf_dict['SETTINGS']['start year'],
+        'end year': conf_dict['SETTINGS']['end year'],
+        'months': conf_dict['SETTINGS']['months'],
         'variables': conf_dict['SETTINGS']['variables'],
         'var modification': conf_dict['SETTINGS']['variable modification'],
-        'regions': conf_dict['SETTINGS']['regions'],
+        'regions': conf_dict['SETTINGS']['target regions'],
         'requested_stats': conf_dict['STATISTICS']['stats'],
-        'validation plot': conf_dict['PLOTTING']['validation plot'],
+        'detection plot': conf_dict['PLOTTING']['detection plot'],
         'map configure': conf_dict['PLOTTING']['map configure'],
         'map grid setup': conf_dict['PLOTTING']['map grid setup'],
         'map kwargs': conf_dict['PLOTTING']['map kwargs'],
@@ -48,7 +48,6 @@ def get_settings(config_file):
         'cluster kwargs': conf_dict['CLUSTER']['cluster kwargs'],
         'outdir': conf_dict['SETTINGS']['output dir'],
     }
-    #'stats_conf': st.mod_stats_config(conf_dict['STATISTICS']['stats']),
 
     return d
 

@@ -7,7 +7,7 @@ class PreProcessing(object):
 
     """
     Read data from input file
-    
+
     """
 
     def __init__(self, path_in, file_in):
@@ -20,8 +20,8 @@ class PreProcessing(object):
         Read the data (from coarse model) to be used for extreme detection.
 
         Args:
-            dt_start: 
-            dt_end: 
+            dt_start:
+            dt_end:
 
         Returns:
             data:
@@ -33,7 +33,7 @@ class PreProcessing(object):
 
         Nx, Ny, lons, lats, time = filereader.getDimensions_NC(nc_file_in_id)
         varsOut = filereader.getParams_NC(nc_file_in_id, params = vars_name, close=True)
-        
+
         return Nx, Ny, lons, lats, time, varsOut
 
 
@@ -42,8 +42,8 @@ class PreProcessing(object):
         Read the data (from higher resolution model) to be used for evaluation.
 
         Args:
-            dt_start: 
-            dt_end: 
+            dt_start:
+            dt_end:
 
         Returns:
             data:
@@ -58,10 +58,10 @@ class PreProcessing(object):
         Extract data over a pre-defined (sub)domain of the coarse model
 
         Args:
-            
+
 
         Returns:
-            
+
 
         """
 
