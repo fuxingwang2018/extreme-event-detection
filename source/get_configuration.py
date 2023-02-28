@@ -33,6 +33,7 @@ def get_settings(config_file):
         'obs start year': conf_dict['OBS']['start year'],
         'obs end year': conf_dict['OBS']['end year'],
         'obs months': conf_dict['OBS']['months'],
+        'extreme_type': conf_dict['SETTINGS']['extreme_type'],
         'variables': conf_dict['SETTINGS']['variables'],
         'var modification': conf_dict['SETTINGS']['variable modification'],
         #'regions': conf_dict['SETTINGS']['regions'],

@@ -31,15 +31,17 @@ def main():
     #print('data_for_detection', type(data_for_detection), np.shape(data_for_detection))
 
 
-    extreme_detection = extreme_detection_algorithm.ExtremeDetectionAlgorithm(data_for_detection)
+    extreme_detection = extreme_detection_algorithm.ExtremeDetectionAlgorithm(data_for_detection, cdict['extreme_type'])
     for stats in cdict['stats_conf']:
         if 'threshold_based' in stats:
             extreme_detected = extreme_detection.threshold_based_algorithm(cdict['stats_conf'][stats])
-        print('time_period_of_extreme_triggered', extreme_detected['time_period_of_extreme_triggered'])
-        print('extreme_warning_level', extreme_detected['extreme_warning_level'])
+        for extreme_type, extreme_feature in extreme_detected.items():
+            print('extreme events detected:', extreme_type)
+            print('time_period_of_extreme_triggered', extreme_detected[extreme_type]['time_period_of_extreme_triggered'])
+            print('extreme_warning_level', extreme_detected[extreme_type]['extreme_warning_level'])
 
-
-    plots.map_extreme_detected(data_for_detection, extreme_detected, cdict['map configure'], cdict['outdir'])
+        plots.map_extreme_detected(data_for_detection, extreme_detected, cdict['extreme_type'], \
+            cdict['map configure'], cdict['outdir'])
 
 
     """

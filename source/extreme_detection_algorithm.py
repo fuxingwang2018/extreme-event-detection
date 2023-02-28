@@ -15,9 +15,10 @@ class ExtremeDetectionAlgorithm(object):
 
     """
 
-    def __init__(self, data_in):
+    def __init__(self, data_in, extreme_type):
 
         self.data_in = data_in
+        self.extreme_type = extreme_type
 
 
     def threshold_based_algorithm(self, statistics_configure):
@@ -37,21 +38,27 @@ class ExtremeDetectionAlgorithm(object):
         assert statistics_configure['perc_of_days'] > 0.0,   "ERROR: negative perc_of_days"
 
         extreme_detected = {}
-        # Finds potential extreme events over time step as values larger than the threshold 
-        statis = statistics.Statistics(self.data_in['tas'])
-        threshold_for_extreme = statis.extreme_threshold( \
-            statistics_configure['threshold_method'], \
-            statistics_configure['pctl_threshold'])
-        extreme_detected['latitude']  = self.data_in['latitude']
-        extreme_detected['longitude'] = self.data_in['longitude']
-        extreme_detected['statistics_for_extremes'] = statis.extreme_statistics(threshold_for_extreme)
-        extreme_detected['time_period_of_extreme_triggered'] = \
-            statis.extreme_triggering( \
-            statistics_configure['filter_method'], \
-            extreme_detected['statistics_for_extremes'], \
-            statistics_configure['perc_of_days'] )
-        extreme_detected['extreme_warning_level'] = \
-            statis.extreme_warning(extreme_detected['statistics_for_extremes'])
+        threshold_for_extreme = {}
+
+        for extreme_name, variable in self.extreme_type.items():
+            if variable in self.data_in.keys():
+                extreme_detected[extreme_name] = {}
+                # Finds potential extreme events over time step as values larger than the threshold 
+                statis = statistics.Statistics(self.data_in[variable])
+                threshold_for_extreme[extreme_name] = statis.extreme_threshold( \
+                    statistics_configure['threshold_method'], \
+                    statistics_configure['pctl_threshold'])
+                extreme_detected[extreme_name]['latitude']  = self.data_in['latitude']
+                extreme_detected[extreme_name]['longitude'] = self.data_in['longitude']
+                extreme_detected[extreme_name]['statistics_for_extremes'] = \
+                    statis.extreme_statistics(threshold_for_extreme[extreme_name])
+                extreme_detected[extreme_name]['time_period_of_extreme_triggered'] = \
+                    statis.extreme_triggering( \
+                    statistics_configure['filter_method'], \
+                    extreme_detected[extreme_name]['statistics_for_extremes'], \
+                    statistics_configure['perc_of_days'] )
+                extreme_detected[extreme_name]['extreme_warning_level'] = \
+                    statis.extreme_warning(extreme_detected[extreme_name]['statistics_for_extremes'])
         
         return extreme_detected
 
@@ -61,11 +68,4 @@ class ExtremeDetectionAlgorithm(object):
 
         pass
 
-
-    def extreme_type(self):
-        extreme_name = { \
-            'tas': 'heatwave', \
-            'precipitaiton': 'extreme_precipitation', \
-            }
-        return extreme_name
 
