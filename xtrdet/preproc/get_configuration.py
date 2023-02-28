@@ -1,8 +1,7 @@
-
 import sys
 import os
-# sys.path.insert(0, '..')
-from preproc import ini_reader
+from xtrdet.preproc import ini_reader
+
 
 def get_args():
     """
@@ -29,14 +28,15 @@ def get_settings(config_file):
     conf_dict = ini_reader.get_config_dict(config_file)
     d = {
         'target data': conf_dict['INPUT DATA']['target data'],
-        'cont data': conf_dict['INPUT DATA']['contingency data'],
-        'start year': conf_dict['SETTINGS']['start year'],
-        'end year': conf_dict['SETTINGS']['end year'],
-        'months': conf_dict['SETTINGS']['months'],
-        'variables': conf_dict['SETTINGS']['variables'],
+        'climatology data': conf_dict['INPUT DATA']['climatology data'],
+        # 'cont data': conf_dict['INPUT DATA']['contingency data'],
+        # 'target dates': conf_dict['SETTINGS']['target period'],
+        # 'climatology dates': conf_dict['SETTINGS']['climatology period'],
+        # 'variables': conf_dict['SETTINGS']['variables'],
         'var modification': conf_dict['SETTINGS']['variable modification'],
         'regions': conf_dict['SETTINGS']['target regions'],
-        'requested_stats': conf_dict['STATISTICS']['stats'],
+        'detection method': conf_dict['DETECTION METHOD']['method'],
+        'method args': conf_dict['DETECTION METHOD']['method args'],
         'detection plot': conf_dict['PLOTTING']['detection plot'],
         'map configure': conf_dict['PLOTTING']['map configure'],
         'map grid setup': conf_dict['PLOTTING']['map grid setup'],
@@ -50,6 +50,3 @@ def get_settings(config_file):
     }
 
     return d
-
-
-

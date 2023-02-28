@@ -1,7 +1,8 @@
-import os, sys
-sys.path.insert(0, '..')
-from utils import file_reader
-from utils import ncdump
+import os
+import sys
+from xtrdet.utils import open_data
+from xtrdet.utils import ncdump
+
 
 class PreProcessing(object):
 
