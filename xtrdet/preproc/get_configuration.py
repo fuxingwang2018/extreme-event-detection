@@ -1,8 +1,7 @@
-
 import sys
 import os
-sys.path.insert(0, '..')
-from utils import ini_reader
+from xtrdet.preproc import ini_reader
+
 
 def get_args():
     """
@@ -28,18 +27,17 @@ def get_settings(config_file):
     """
     conf_dict = ini_reader.get_config_dict(config_file)
     d = {
-        'models': conf_dict['MODELS'],
-        'obs metadata file': conf_dict['OBS']['metadata file'],
-        'obs start year': conf_dict['OBS']['start year'],
-        'obs end year': conf_dict['OBS']['end year'],
-        'obs months': conf_dict['OBS']['months'],
-        'variables': conf_dict['SETTINGS']['variables'],
+        'target data': conf_dict['INPUT DATA']['target data'],
+        'climatology data': conf_dict['INPUT DATA']['climatology data'],
+        # 'cont data': conf_dict['INPUT DATA']['contingency data'],
+        # 'target dates': conf_dict['SETTINGS']['target period'],
+        # 'climatology dates': conf_dict['SETTINGS']['climatology period'],
+        # 'variables': conf_dict['SETTINGS']['variables'],
         'var modification': conf_dict['SETTINGS']['variable modification'],
-        #'regions': conf_dict['SETTINGS']['regions'],
-        'coordinates_of_detection_area': conf_dict['SETTINGS']['coordinates_of_detection_area'], 
-        'requested_stats': conf_dict['STATISTICS']['stats'],
-        'stats_conf': mod_stats_config(conf_dict['STATISTICS']['stats']),
-        'validation plot': conf_dict['PLOTTING']['validation plot'],
+        'regions': conf_dict['SETTINGS']['target regions'],
+        'detection method': conf_dict['DETECTION METHOD']['method'],
+        'method args': conf_dict['DETECTION METHOD']['method args'],
+        'detection plot': conf_dict['PLOTTING']['detection plot'],
         'map configure': conf_dict['PLOTTING']['map configure'],
         'map grid setup': conf_dict['PLOTTING']['map grid setup'],
         'map kwargs': conf_dict['PLOTTING']['map kwargs'],
@@ -100,4 +98,3 @@ def mod_stats_config(requested_stats):
                     print(msg)
 
     return stats_dd
-

@@ -1,14 +1,14 @@
-import os, sys
-sys.path.insert(0, '..')
-from utils import file_reader
-from utils import ncdump
-from utils import data_extract
+import os
+import sys
+from xtrdet.utils import open_data
+from xtrdet.utils import ncdump
+
 
 class PreProcessing(object):
 
     """
     Read data from input file
-    
+
     """
 
     def __init__(self, path_in, file_in):
@@ -19,7 +19,14 @@ class PreProcessing(object):
     def get_rawdata(self, variable_name_of_detection):
 
         """
-        Get the raw data from input files.
+        Read the data (from coarse model) to be used for extreme detection.
+
+        Args:
+            dt_start:
+            dt_end:
+
+        Returns:
+            data:
 
         :param variable_name_of_detection: The variable name to be used for detection
         :type variable_name_of_detection: List of strings
@@ -76,11 +83,26 @@ class PreProcessing(object):
         Read the data (from higher resolution model) to be used for evaluation.
 
         Args:
-            dt_start: 
-            dt_end: 
+            dt_start:
+            dt_end:
 
         Returns:
             data:
+
+        """
+
+        return
+
+
+    def get_subdomain(self, pctl_threshold):
+        """
+        Extract data over a pre-defined (sub)domain of the coarse model
+
+        Args:
+
+
+        Returns:
+
 
         """
 
