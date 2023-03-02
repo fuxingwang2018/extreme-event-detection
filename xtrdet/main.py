@@ -3,7 +3,6 @@ import os
 from dask.distributed import Client
 from xtrdet.methods import event_detection_algorithms
 from xtrdet.preproc import get_configuration
-from xtrdet.preproc import preprocessing
 from xtrdet.utils import open_data
 from xtrdet.utils import resampling
 from xtrdet.utils import spatial_masking
@@ -116,17 +115,15 @@ def main():
     resample = resampling.Resampling(res_freq, res_meth)
     clim_mask_resampled = resample.resample(clim_msk_data)
 
-    
-    """
-    extreme_detection = event_detection_algorithms.ExtremeDetectionAlgorithm(algorithm, var)
-    days_of_extreme_detected = extreme_detection.threshold_based_algorithm(filter_method, pctl_threshold, perc_of_days)
+    # Run algorithm
+    algorithm = configuration_dict['method']
+    method_args = configuration_dict['method args']
 
-    Evaluation()
+    event_detection = event_detection_algorithms.ExtremeDetectionAlgorithm(
+        algorithm, method_args, trgt_mask_resampled, clim_mask_resampled, var)
+    results = event_detection.run_algorithm()
 
-    PostProcessing()
-
-    UnitTest()
-    """
+    client.close()
 
 
 if __name__ == "__main__":
