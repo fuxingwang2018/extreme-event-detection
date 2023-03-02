@@ -33,7 +33,7 @@ def get_settings(config_file):
         # 'target dates': conf_dict['SETTINGS']['target period'],
         # 'climatology dates': conf_dict['SETTINGS']['climatology period'],
         # 'variables': conf_dict['SETTINGS']['variables'],
-        'var modification': conf_dict['SETTINGS']['variable modification'],
+        # 'var modification': conf_dict['SETTINGS']['variable modification'],
         'regions': conf_dict['SETTINGS']['target regions'],
         'detection method': conf_dict['DETECTION METHOD']['method'],
         'method args': conf_dict['DETECTION METHOD']['method args'],
