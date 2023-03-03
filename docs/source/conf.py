@@ -11,9 +11,11 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../../source/'))
-sys.path.insert(0, os.path.abspath('../../utils/'))
-sys.path.insert(0, os.path.abspath('../../tests/'))
+sys.path.insert(0, os.path.abspath('../../xtrdet/config/'))
+sys.path.insert(0, os.path.abspath('../../xtrdet/methods/'))
+sys.path.insert(0, os.path.abspath('../../xtrdet/preproc/'))
+sys.path.insert(0, os.path.abspath('../../xtrdet/tests/'))
+sys.path.insert(0, os.path.abspath('../../xtrdet/utils/'))
 sys.path.insert(0, os.path.abspath('../../'))
 
 # -- Project information -----------------------------------------------------

@@ -40,10 +40,8 @@ def get_args():
     Read configuration file
     Parameters
     ----------
-    -
     Returns
     -------
-    Input arguments
     """
     import argparse
 
@@ -88,7 +86,8 @@ def main():
 
     # Settings
     var = 'pr'
-    region = 'Norcp Analysis Domain'
+    #region = 'Norcp Analysis Domain'
+    region = 'stockholm region'
 
     # Target data
     var_conf_trgt = configuration_dict['target data']['variables'][var]
@@ -116,7 +115,7 @@ def main():
     clim_mask_resampled = resample.resample(clim_msk_data)
 
     # Run algorithm
-    algorithm = configuration_dict['method']
+    algorithm = configuration_dict['detection method']
     method_args = configuration_dict['method args']
 
     event_detection = event_detection_algorithms.ExtremeDetectionAlgorithm(
