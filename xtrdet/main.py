@@ -41,10 +41,8 @@ def get_args():
     Read configuration file
     Parameters
     ----------
-    -
     Returns
     -------
-    Input arguments
     """
     import argparse
 
@@ -66,7 +64,6 @@ def main():
     config_file = args.config
     if not os.path.isfile(config_file):
         raise ValueError(f"\nConfig file, '{config_file}', does not exist!")
-    # config_file = '/home/sm_petli/dev/scripts/python/analysis/DEODE/extreme_event_detection/config_main.ini'  # noqa
     configuration_dict = get_configuration.get_settings(config_file)
 
     # Create dirs
@@ -79,8 +76,9 @@ def main():
         cluster = local_cluster_setup()
     elif configuration_dict['cluster type'] == 'slurm':
         nnodes = configuration_dict['nodes']
+        log_dir = configuration_dict['log dir']
         sl_kwargs = configuration_dict['cluster kwargs']
-        cluster = slurm_cluster_setup(nodes=nnodes, **sl_kwargs)
+        cluster = slurm_cluster_setup(nodes=nnodes, log_directory=log_dir, **sl_kwargs)
     else:
         print("\n\tCluster type not implemented! Exiting..")
         sys.exit()

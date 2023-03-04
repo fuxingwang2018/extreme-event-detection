@@ -38,6 +38,7 @@ def get_settings(config_file):
         'line kwargs': conf_dict['PLOTTING']['line kwargs'],
         'cluster type': conf_dict['CLUSTER']['cluster type'],
         'nodes': conf_dict['CLUSTER']['nodes'],
+        'log dir': conf_dict['CLUSTER']['log dir'],
         'cluster kwargs': conf_dict['CLUSTER']['cluster kwargs'],
         'outdir': conf_dict['SETTINGS']['output dir'],
     }

@@ -1,5 +1,5 @@
 import os, sys
-from utils import data_extract
+from xtrdet.utils import data_extract
 
 def test_data_extract():
     #dataextract = data_extract.DataExtract(0, 0)
