@@ -13,15 +13,19 @@ class ExtremeDetectionAlgorithm(object):
     """
 
     def __init__(self, algorithm, algorithm_args,
-                 climatology_data, target_data, var_in):
+                 climatology_data, cl_var_in, target_data, tg_var_in):
 
         self.algorithm = algorithm
         self.args = algorithm_args
         self.clim_data = climatology_data
+        self.cl_var_in = cl_var_in
         self.trgt_data = target_data
+        self.tg_var_in = tg_var_in
+
+    def update_method_args(self, arg, value):
         self.args[arg] = value
 
-    def run_algrithm(self):
+    def run_algorithm(self):
         method_funcs = {
             'threshold_optim': self.threshold_optim,
             'machine_learning_based_algorithm':
@@ -29,11 +33,13 @@ class ExtremeDetectionAlgorithm(object):
         }
 
         algorithm_computation = method_funcs[self.algorithm](
-            self.clim_data, self.trgt_data, self.var_in, self.args)
+            self.clim_data, self.trgt_data, self.cl_var_in, self.tg_var_in,
+            self.args)
 
         return algorithm_computation
 
-    def threshold_optim(self, cdata, tdata, variable, funcargs):
+    def threshold_optim(self, cdata, tdata, cl_variable, tg_variable,
+                        funcargs):
         """
         Detection of extreme convective precipitation events from a coarse
         model (e.g. GCM)
@@ -52,8 +58,10 @@ class ExtremeDetectionAlgorithm(object):
             (extreme events).
 
         Args:
-            variable:
-                Input variable
+            cl_variable:
+                Climatology Input variable
+            tg_variable:
+                Target Input variable
             funcargs:
                 Dictionary with 'filtering method', 'percentile threshold' and
                 'top select percentage' argument settings
@@ -67,12 +75,19 @@ class ExtremeDetectionAlgorithm(object):
         # Extract arguments
         filter_method = funcargs['filtering method']
         pctl = funcargs['percentile threshold']
+        pctl_dim = funcargs['percentile dimension']
         perc_of_days = funcargs['top select percentage']
 
-        thr_clim = cdata.quantile(pctl/100)
+        if len(cdata.chunks['time']) > 1:
+            cdata = cdata.chunk({'time': -1})
 
-        trgt_thr_pass = tdata.where(
-            tdata[variable] >= thr_clim, tdata)
+        if pctl_dim == 'all':
+            thr_clim = cdata.quantile(pctl/100)
+        elif pctl_dim == 'time':
+            thr_clim = cdata.quantile(pctl/100, dim='time')
+
+        mask = tdata[tg_variable] >= thr_clim
+        trgt_thr_pass = tdata.where(mask, tdata)
 
         if filter_method == 'field sum':
             stat_daily = trgt_thr_pass.sum(dim=('x', 'y'))
@@ -81,11 +96,15 @@ class ExtremeDetectionAlgorithm(object):
         else:
             sys.exit('filter_method not defined')
 
-        selected_days = stat_daily.sortby(variable, ascending=False).isel(
+        selected_days = stat_daily.sortby(tg_variable, ascending=False).isel(
             time=slice(0, int((perc_of_days/100)*stat_daily.time.size))).time
 
+        passed_thresholds = mask.sel(time=selected_days).rename(
+            {tg_variable: f'{tg_variable}_threshold_detections'})
         days_of_extreme = tdata.sel(time=selected_days)
-        return days_of_extreme
+
+        ds_out = days_of_extreme.merge(passed_thresholds, compat='override')
+        return ds_out
 
     def machine_learning_based_algorithm(self):
 

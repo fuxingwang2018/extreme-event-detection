@@ -1,5 +1,3 @@
-import sys
-import os
 from xtrdet.preproc import ini_reader
 
 
@@ -29,12 +27,7 @@ def get_settings(config_file):
     d = {
         'target data': conf_dict['INPUT DATA']['target data'],
         'climatology data': conf_dict['INPUT DATA']['climatology data'],
-        # 'cont data': conf_dict['INPUT DATA']['contingency data'],
-        # 'target dates': conf_dict['SETTINGS']['target period'],
-        # 'climatology dates': conf_dict['SETTINGS']['climatology period'],
-        # 'variables': conf_dict['SETTINGS']['variables'],
-        # 'var modification': conf_dict['SETTINGS']['variable modification'],
-        'regions': conf_dict['SETTINGS']['target regions'],
+        'region': conf_dict['SETTINGS']['target region'],
         'detection method': conf_dict['DETECTION METHOD']['method'],
         'method args': conf_dict['DETECTION METHOD']['method args'],
         'detection plot': conf_dict['PLOTTING']['detection plot'],
