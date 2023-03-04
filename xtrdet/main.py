@@ -4,6 +4,7 @@ from dask.distributed import Client
 from xtrdet.methods import event_detection_algorithms
 from xtrdet.preproc import get_configuration
 from xtrdet.utils import open_data
+from xtrdet.utils import write_data
 from xtrdet.utils import resampling
 from xtrdet.utils import spatial_masking
 
@@ -56,15 +57,13 @@ def get_args():
 
 def main():
 
-    os.system('ulimit -c')
+    # os.system('ulimit -c')
 
     # Get configuration
-    # args = get_configuration.get_args()
-    # config_file = args.config
-    # if not os.path.isfile(config_file):
-    #     raise ValueError(f"\nConfig file, '{config_file}', does not exist!")
-    #config_file = '/home/sm_petli/dev/scripts/python/analysis/DEODE/extreme_event_detection/config_main.ini'  # noqa
-    config_file = 'xtrdet/config/config_main.ini'  # noqa
+    args = get_configuration.get_args()
+    config_file = args.config
+    if not os.path.isfile(config_file):
+        raise ValueError(f"\nConfig file, '{config_file}', does not exist!")
     configuration_dict = get_configuration.get_settings(config_file)
 
     # Create dirs
@@ -86,43 +85,63 @@ def main():
 
     client = Client(cluster)
 
-    # Settings
-    var = 'pr'
-    #region = 'Norcp Analysis Domain'
-    region = 'stockholm region'
+    # Get Settings
+    target_conf = configuration_dict['target data']
+    target_variable_conf = target_conf['variables']
+    trgt_name = target_conf['data name']
 
-    # Target data
-    var_conf_trgt = configuration_dict['target data']['variables'][var]
-    target_conf = open_data.ReadInputData(configuration_dict['target data'])
-    trgt_data = target_conf.read_data(var)
+    climate_conf = configuration_dict['climatology data']
+    climate_variable_conf = climate_conf['variables']
+    clim_name = climate_conf['data name']
 
-    masking_trgt_data = spatial_masking.SpatialMasking(trgt_data, var)
-    trgt_msk_data = masking_trgt_data.get_mask(region, extract_data=True)
+    region = configuration_dict['region']
 
-    res_freq, res_meth = var_conf_trgt['resample resolution']
-    resample = resampling.Resampling(res_freq, res_meth)
-    trgt_mask_resampled = resample.resample(trgt_msk_data)
+    for tgvar, clvar in zip(target_variable_conf, climate_variable_conf):
 
-    # Climate data
-    var_conf_clim = configuration_dict['climatology data']['variables'][var]
-    clim_conf = open_data.ReadInputData(
-        configuration_dict['climatology data'])
-    clim_data = clim_conf.read_data(var)
+        fn = f"target.{trgt_name}.{tgvar}_climtlgy.{clim_name}.{clvar}"
+        if region is not None:
+            fn = f"{fn}.{region.replace(' ', '_')}"
 
-    masking_clm_data = spatial_masking.SpatialMasking(clim_data, var)
-    clim_msk_data = masking_clm_data.get_mask(region, extract_data=True)
+        var_conf_trgt = target_variable_conf[tgvar]
+        var_conf_clim = climate_variable_conf[clvar]
 
-    res_freq, res_meth = var_conf_clim['resample resolution']
-    resample = resampling.Resampling(res_freq, res_meth)
-    clim_mask_resampled = resample.resample(clim_msk_data)
+        # Target data
+        trgt_data_dd = open_data.ReadInputData(target_conf)
+        trgt_data = trgt_data_dd.read_data(tgvar)
 
-    # Run algorithm
-    algorithm = configuration_dict['detection method']
-    method_args = configuration_dict['method args']
+        if region is not None:
+            masking_tgt_data = spatial_masking.SpatialMasking(trgt_data, tgvar)
+            trgt_data = masking_tgt_data.get_mask(region, extract_data=True)
 
-    event_detection = event_detection_algorithms.ExtremeDetectionAlgorithm(
-        algorithm, method_args, trgt_mask_resampled, clim_mask_resampled, var)
-    results = event_detection.run_algorithm()
+        if var_conf_trgt['resample resolution'] is not None:
+            res_freq, res_meth = var_conf_trgt['resample resolution']
+            resample = resampling.Resampling(res_freq, res_meth)
+            trgt_data = resample.resample(trgt_data)
+
+        # Climate data
+        clim_data_dd = open_data.ReadInputData(climate_conf)
+        clim_data = clim_data_dd.read_data(clvar)
+
+        if region is not None:
+            masking_clm_data = spatial_masking.SpatialMasking(clim_data, clvar)
+            clim_data = masking_clm_data.get_mask(region, extract_data=True)
+
+        if var_conf_clim['resample resolution'] is not None:
+            res_freq, res_meth = var_conf_clim['resample resolution']
+            resample = resampling.Resampling(res_freq, res_meth)
+            clim_data = resample.resample(clim_data)
+
+        # Run algorithm
+        algorithm = configuration_dict['detection method']
+        method_args = configuration_dict['method args']
+
+        event_detection = event_detection_algorithms.ExtremeDetectionAlgorithm(
+            algorithm, method_args, clim_data, clvar, trgt_data, tgvar)
+        results = event_detection.run_algorithm()
+
+        # Write results to file
+        write = write_data.WriteData(results, algorithm, outdir, fn)
+        write.save_data()
 
     client.close()
 
