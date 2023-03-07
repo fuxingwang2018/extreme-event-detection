@@ -1,7 +1,6 @@
-
-from plot_map import PlotMap
-import fig_parameters
 import numpy as np
+from xtrdet.postproc import plot_map
+from xtrdet.postproc import fig_parameters
 
 def map_extreme_detected(data_for_detection, extreme_dectedted, extreme_type, map_configuration, outdir):
 
@@ -18,6 +17,7 @@ def map_extreme_detected(data_for_detection, extreme_dectedted, extreme_type, ma
         data_to_plot['extremes_filtered']  = np.nanmean(extremes_filtered, axis = 0)
         nsubplot = len(data_to_plot)
 
+        PlotMap = plot_map.PlotMap()
         plotmap = PlotMap( \
             map_configuration['proj'], \
             map_configuration['res'], \

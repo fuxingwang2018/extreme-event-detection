@@ -87,6 +87,7 @@ class ExtremeDetectionAlgorithm(object):
             thr_clim = cdata.quantile(pctl/100, dim='time')
 
         mask = tdata[tg_variable] >= thr_clim
+        mask = mask.transpose("time", ...)
         trgt_thr_pass = tdata.where(mask, tdata)
 
         if filter_method == 'field sum':
