@@ -25,8 +25,7 @@ def get_settings(config_file):
     """
     conf_dict = ini_reader.get_config_dict(config_file)
     d = {
-        'target data': conf_dict['INPUT DATA']['target data'],
-        'climatology data': conf_dict['INPUT DATA']['climatology data'],
+        'data config': conf_dict['INPUT DATA']['data info'],
         'region': conf_dict['SETTINGS']['target region'],
         'detection method': conf_dict['DETECTION METHOD']['method'],
         'method args': conf_dict['DETECTION METHOD']['method args'],

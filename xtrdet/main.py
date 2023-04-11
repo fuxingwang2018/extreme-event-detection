@@ -79,7 +79,8 @@ def main():
         nnodes = configuration_dict['nodes']
         log_dir = configuration_dict['log dir']
         sl_kwargs = configuration_dict['cluster kwargs']
-        cluster = slurm_cluster_setup(nodes=nnodes, log_directory=log_dir, **sl_kwargs)
+        cluster = slurm_cluster_setup(nodes=nnodes, log_directory=log_dir,
+                                      **sl_kwargs)
     else:
         print("\n\tCluster type not implemented! Exiting..")
         sys.exit()
@@ -87,49 +88,32 @@ def main():
     client = Client(cluster)
 
     # Get Settings
-    target_conf = configuration_dict['target data']
-    target_variable_conf = target_conf['variables']
-    trgt_name = target_conf['data name']
-
-    climate_conf = configuration_dict['climatology data']
-    climate_variable_conf = climate_conf['variables']
-    clim_name = climate_conf['data name']
+    data_config = configuration_dict['data config']
+    variable_config = data_config['variables']
+    data_source = data_config['data source']
 
     region = configuration_dict['region']
 
-    for tgvar, clvar in zip(target_variable_conf, climate_variable_conf):
+    for var in variable_config:
 
-        fn = f"target.{trgt_name}.{tgvar}_climtlgy.{clim_name}.{clvar}"
+        fn = f"event_detection.{data_source.replace(' ', '_')}.{var}"
         if region is not None:
             fn = f"{fn}.{region.replace(' ', '_')}"
 
-        var_conf_trgt = target_variable_conf[tgvar]
-        var_conf_clim = climate_variable_conf[clvar]
-
-        # Target data
-        trgt_data_dd = open_data.ReadInputData(target_conf)
-        trgt_data = trgt_data_dd.read_data(tgvar)
+        # Read data
+        data_dd = open_data.ReadInputData(data_config)
+        trgt_data, clim_data = data_dd.read_data(var)
 
         if region is not None:
-            masking_tgt_data = spatial_masking.SpatialMasking(trgt_data, tgvar)
-            trgt_data = masking_tgt_data.get_mask(region, extract_data=True)
-
-        if var_conf_trgt['resample resolution'] is not None:
-            res_freq, res_meth = var_conf_trgt['resample resolution']
-            resample = resampling.Resampling(res_freq, res_meth)
-            trgt_data = resample.resample(trgt_data)
-
-        # Climate data
-        clim_data_dd = open_data.ReadInputData(climate_conf)
-        clim_data = clim_data_dd.read_data(clvar)
-
-        if region is not None:
-            masking_clm_data = spatial_masking.SpatialMasking(clim_data, clvar)
+            masking_trgt_data = spatial_masking.SpatialMasking(trgt_data, var)
+            trgt_data = masking_trgt_data.get_mask(region, extract_data=True)
+            masking_clm_data = spatial_masking.SpatialMasking(clim_data, var)
             clim_data = masking_clm_data.get_mask(region, extract_data=True)
 
-        if var_conf_clim['resample resolution'] is not None:
-            res_freq, res_meth = var_conf_clim['resample resolution']
+        if variable_config[var]['resample resolution'] is not None:
+            res_freq, res_meth = variable_config[var]['resample resolution']
             resample = resampling.Resampling(res_freq, res_meth)
+            trgt_data = resample.resample(trgt_data)
             clim_data = resample.resample(clim_data)
 
         # Run algorithm
@@ -137,7 +121,7 @@ def main():
         method_args = configuration_dict['method args']
 
         event_detection = event_detection_algorithms.ExtremeDetectionAlgorithm(
-            algorithm, method_args, clim_data, clvar, trgt_data, tgvar)
+            data_source, algorithm, method_args, clim_data, trgt_data, var)
         results = event_detection.run_algorithm()
 
         # Write results to file
