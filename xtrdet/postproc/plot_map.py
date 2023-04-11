@@ -122,7 +122,7 @@ class PlotMap(object):
 
 
     def plot_2dfield(self, lat, lon, var2d_to_plot, scale_min_def, scale_max_def, \
-        title_def, cmap_def, fontsize_def, isubplot):
+        title_def, cmap_def, fontsize_def, isubplot = 1):
 
         #if np.array(lat).dim == 1 and np.array(lon).dim == 1:  
         #    lon, lat = np.meshgrid(lon, lat)
@@ -147,15 +147,20 @@ class PlotMap(object):
         plt.title(title_def, fontsize=fontsize_def)
 
 
-    def plot_colorbar(self, label_def, extend_def):
+    def plot_colorbar(self, label_def, extend_def, isubplot = 1):
+
         plt.subplots_adjust(left=0, bottom=0.02, right=1.0, top=1.0)
+        cax = {}
         if self.nsubplot == 6:
-            cax = plt.axes([0.1, 0.05, 0.8, 0.02]) #left, bottom, width, height
+            cax[0] = plt.axes([0.1, 0.05, 0.8, 0.02]) #left, bottom, width, height
         elif self.nsubplot == 4:
-            cax = plt.axes([0.1, 0.03, 0.8, 0.02]) #left, bottom, width, height
+            cax[0] = plt.axes([0.1, 0.03, 0.8, 0.02]) #left, bottom, width, height
         elif self.nsubplot == 2:
-            cax = plt.axes([0.1, 0.08, 0.8, 0.02]) #left, bottom, width, height
-        cb=plt.colorbar(label=label_def, cax=cax, orientation='horizontal', extend=extend_def)
+            #cax = plt.axes([0.1, 0.08, 0.8, 0.02]) #left, bottom, width, height
+            cax[0] = plt.axes([0.05, 0.08, 0.4, 0.02]) #left, bottom, width, height
+            cax[1] = plt.axes([0.55, 0.08, 0.4, 0.02]) #left, bottom, width, height
+        cb = plt.colorbar(label=label_def, cax=cax[isubplot-1], orientation='horizontal', extend=extend_def)
+
         #cb=plt.colorbar(label=label_def, pad=0.02, shrink=0.8, extend=extend_def)
         #cb=plt.colorbar(label=label_def, orientation='horizontal', pad=0.02, shrink=0.8, extend=extend_def)
         ##cb.colorbar().set_label(label=label_def, size=15)

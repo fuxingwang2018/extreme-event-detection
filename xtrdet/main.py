@@ -7,6 +7,7 @@ from xtrdet.utils import open_data
 from xtrdet.utils import write_data
 from xtrdet.utils import resampling
 from xtrdet.utils import spatial_masking
+from xtrdet.postproc import plot_results
 
 
 def local_cluster_setup():
@@ -126,6 +127,10 @@ def main():
         # Write results to file
         write = write_data.WriteData(results, algorithm, outdir, fn)
         write.save_data()
+
+        # Plot results
+        plot_results.map_extreme_detected(tgvar, results, '', configuration_dict['map configure'], outdir)
+ 
 
     client.close()
 
