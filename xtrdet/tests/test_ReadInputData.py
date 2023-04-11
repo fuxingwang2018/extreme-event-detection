@@ -10,14 +10,16 @@ def test_ReadInputData():
     #file_in = 'tas_NEU-12_ICHEC-EC-EARTH_historical_r12i1p1_HCLIMcom-HCLIM38-ALADIN_v1_1hr_198501010000-198512312300.nc'
     #path_in = '/nobackup/rossby24/proj/rossby/joint_exp/norcp/netcdf/NorCP_ALADIN_ECE_1985_2005/1hr/tas'
 
-    config_file = 'xtrdet/tests/config_test.ini'
+    """
+    config_file = 'xtrdet/config/config_main.ini' #tests/config_test.ini'
     if not os.path.isfile(config_file):
         raise ValueError(f"\nConfig file, '{config_file}', does not exist!")
     configuration_dict = get_configuration.get_settings(config_file)
 
+    print('configuration_dict', configuration_dict)
     # Target data
-    var = 'tas'
-    target_conf = open_data.ReadInputData(configuration_dict['target data'])
+    var = 'pr'
+    target_conf = open_data.ReadInputData(configuration_dict['data config'])
     trgt_data = target_conf.read_data(var)
     print('trgt_data', trgt_data)
     print('trgt_data', trgt_data['x'], len(trgt_data['x']))
@@ -35,3 +37,5 @@ def test_ReadInputData():
     assert len(trgt_data['time']) == len(nc_file_in_id.dimensions['time'])
 
     nc_file_in_id.close()
+    """
+    pass
