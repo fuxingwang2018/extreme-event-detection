@@ -129,7 +129,7 @@ def main():
         write.save_data()
 
         # Plot results
-        plot_results.map_extreme_detected(tgvar, results, '', configuration_dict['map configure'], outdir)
+        #plot_results.map_extreme_detected(tgvar, results, '', configuration_dict['map configure'], outdir)
  
 
     client.close()
