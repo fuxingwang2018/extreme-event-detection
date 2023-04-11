@@ -4,6 +4,8 @@ import xarray as xa
 import glob
 import re
 from itertools import product
+from datetime import datetime
+from datetime import timedelta
 
 
 class ReadInputData(object):
@@ -11,26 +13,19 @@ class ReadInputData(object):
 
     def __init__(self, data_dict):
         self.data_dict = data_dict
-
-        self.start_year = data_dict['start year']
-        self.end_year = data_dict['end year']
-        self.mon = data_dict['month']
-        self.date = data_dict['date']
-        if 'day window size' in data_dict:
-            self.day_window_size = data_dict['day window size']
-
+        self.data_src = data_dict['data source']
         self.var_dict = data_dict['variables']
 
-    def get_selected_dates(self):
+    def get_selected_dates(self, s_year, e_year, mon):
         """
         Specify a list of selected dates
         """
         date_list = [f"{yy}{mm:02d}" for yy, mm in product(
-            range(self.start_year, self.end_year+1), self.mon)]
+            range(s_year, e_year+1), mon)]
 
         return date_list
 
-    def get_file_list(self, variable):
+    def get_file_list(self, variable, fpath, start_year, end_year, month):
         """
         Create a list of files for input data
 
@@ -42,11 +37,10 @@ class ReadInputData(object):
         """
         var_conf = self.var_dict[variable]
         tres = var_conf['freq']
-        fpath = self.data_dict['fpath']
-        file_path = os.path.join(fpath, f'{tres}/{variable}/{variable}_*.nc')
-        global_flist = glob.glob(file_path)
+        files = os.path.join(fpath, f'{tres}/{variable}/{variable}_*.nc')
+        global_flist = glob.glob(files)
 
-        date_select = self.get_selected_dates()
+        date_select = self.get_selected_dates(start_year, end_year, month)
         filename_dates = [re.split('-|_', f.rsplit('.')[-2])[-2:]
                           for f in global_flist]
         filename_dates = [(d[0][:6], d[1][:6]) for d in filename_dates]
@@ -68,37 +62,133 @@ class ReadInputData(object):
         Returns:
             TBD
         """
+        readers = {
+            'ecmwf ensemble': self.read_ecmwf_ens,
+            'norcp': self.read_climate_model_data
+        }
+
+        target_data, climate_data = readers[self.data_src](variable)
+
         var_conf = self.var_dict[variable]
-        ch_t = self.data_dict['chunks_time']
-        ch_x = self.data_dict['chunks_x']
-        ch_y = self.data_dict['chunks_y']
         scale_factor = var_conf['scale factor']
         offset_factor = var_conf['offset factor']
 
-        file_list = self.get_file_list(variable)
+        if scale_factor is not None:
+            target_data[variable] *= scale_factor
+            climate_data[variable] *= scale_factor
 
-        data = xa.open_mfdataset(
+        if offset_factor is not None:
+            target_data[variable] += offset_factor
+            climate_data[variable] += offset_factor
+
+        return target_data, climate_data
+
+    def read_ecmwf_ens(self, variable):
+        """
+        Read ECMWF ensemble forecast data
+        Args:
+            TBD
+
+        Returns:
+            TBD
+        """
+        ch_t = self.data_dict['chunks_time']
+        ch_x = self.data_dict['chunks_x']
+        ch_y = self.data_dict['chunks_y']
+
+        var_conf = self.var_dict[variable]
+        self.dailystat = var_conf['daily statistic']
+
+        # Target data
+        self.trgt_fpath = self.data_dict['target']['fpath']
+        self.validtime = self.data_dict['target']['valid time']
+        self.leadtime = self.data_dict['target']['lead time']
+        fprx = (f"{variable}_*ltime_{self.leadtime}"
+                f"*validtime_{self.validtime}.nc")
+        files = os.path.join(self.trgt_fpath, variable,
+                             self.dailystat, fprx)
+        trgt_file = glob.glob(files)[0]
+        trgt_select_data = xa.load_dataset(trgt_file)
+
+        # Climatology data
+        self.clim_fpath = self.data_dict['climatology']['fpath']
+        self.clim_start_year = self.data_dict['climatology']['start year']
+        self.clim_end_year = self.data_dict['climatology']['end year']
+        self.day_window_size = self.data_dict['climatology']['day window size']
+        fprx = f"{variable}_*.nc"
+        files = os.path.join(self.clim_fpath, variable,
+                             self.dailystat, fprx)
+        clim_files = glob.glob(files)
+        clim_files.sort()
+        clim_data = xa.open_mfdataset(
+            clim_files, parallel=True, combine='by_coords',
+            chunks={**ch_t, **ch_x, **ch_y})
+
+        vt = datetime.strptime(self.validtime, '%Y-%m-%d')
+        date_start = (vt - timedelta(days=int(self.day_window_size/2)))
+        date_start_str = datetime.strftime(date_start, '%Y-%m-%d')
+        date_end = (vt + timedelta(days=int(self.day_window_size/2)))
+        date_end_str = datetime.strftime(date_end, '%Y-%m-%d')
+        select_dates = np.concatenate(
+            [xa.date_range(f"{y}{date_start_str[4::]}T12:00:00",
+                           f"{y}{date_end_str[4::]}T12:00:00", freq='D').values
+             for y in range(self.clim_start_year, self.clim_end_year+1)])
+        clim_select_data = clim_data.sel(time=select_dates)
+
+        return trgt_select_data, clim_select_data
+
+    def read_climate_model_data(self, variable):
+        """
+        Read ECMWF ensemble forecast data
+        Args:
+            TBD
+
+        Returns:
+            TBD
+        """
+        ch_t = self.data_dict['chunks_time']
+        ch_x = self.data_dict['chunks_x']
+        ch_y = self.data_dict['chunks_y']
+
+        # Target data
+        self.trgt_fpath = self.data_dict['target']['fpath']
+        self.trgt_stat_year = self.data_dict['target']['start year']
+        self.trgt_end_year = self.data_dict['target']['end year']
+        self.trgt_month = self.data_dict['target']['month']
+        file_list = self.get_file_list(variable, self.trgt_fpath,
+                                       self.trgt_start_year,
+                                       self.trgt_end_year,
+                                       self.trgt_month)
+        trgt_data = xa.open_mfdataset(
             file_list, parallel=True, combine='by_coords',
             chunks={**ch_t, **ch_x, **ch_y})
 
-        select_data = data.where(
-            ((data.time.dt.year >= self.start_year) &
-             (data.time.dt.year <= self.end_year) &
-             (np.isin(data.time.dt.month, self.mon))),
+        trgt_select_data = trgt_data.where(
+            ((trgt_data.time.dt.year >= self.trgt_start_year) &
+             (trgt_data.time.dt.year <= self.trgt_end_year) &
+             (np.isin(trgt_data.time.dt.month, self.trgt_month))),
             drop=True)
 
-        if scale_factor is not None:
-            select_data[variable] *= scale_factor
+        # Climatology data
+        self.clim_fpath = self.data_dict['climatology']['fpath']
+        self.clim_stat_year = self.data_dict['climatology']['start year']
+        self.clim_end_year = self.data_dict['climatology']['end year']
+        self.clim_month = self.data_dict['climatology']['month']
+        file_list = self.get_file_list(variable, self.clim_fpath,
+                                       self.clim_start_year,
+                                       self.clim_end_year,
+                                       self.clim_month)
+        clim_data = xa.open_mfdataset(
+            file_list, parallel=True, combine='by_coords',
+            chunks={**ch_t, **ch_x, **ch_y})
 
-        if offset_factor is not None:
-            select_data[variable] += offset_factor
+        clim_select_data = clim_data.where(
+            ((clim_data.time.dt.year >= self.clim_start_year) &
+             (clim_data.time.dt.year <= self.clim_end_year) &
+             (np.isin(clim_data.time.dt.month, self.clim_month))),
+            drop=True)
 
-        xd, yd = self.get_spatial_coords(select_data)
-
-        if select_data[xd].max() > 180:
-            select_data = self.convert_lon_to_plusminus180(select_data, xd)
-
-        return select_data
+        return trgt_select_data, clim_select_data
 
     def convert_lon_to_plusminus180(self, ds, xcoord):
         ds.coords[xcoord] = (ds.coords[xcoord] + 180) % 360 - 180

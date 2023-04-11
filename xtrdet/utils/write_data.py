@@ -16,6 +16,7 @@ class WriteData(object):
     def save_data(self):
         save_funcs = {
             'threshold_optim': self.save_threshold_optim_output,
+            'extreme_forecast_index': self.save_efi_output,
             'machine_learning_based_algorithm':
             self.save_threshold_optim_output
         }
@@ -23,9 +24,9 @@ class WriteData(object):
         save_funcs[self.method](self.data, self.outpath)
 
     def save_threshold_optim_output(self, data, outpath):
-        # msg = (f"\nOutput from method {self.method} should be a dictionary: "
-        #        f"1) passed thresholds; 2) extracted field data")
-        # assert isinstance(data, dict), msg
+        fname = f"{self.fprx}.{self.method}.nc"
+        data.to_netcdf(os.path.join(self.outpath, fname))
 
-        fname = f"{self.fprx}_{self.method}.nc"
+    def save_efi_output(self, data, outpath):
+        fname = f"{self.fprx}.efi.nc"
         data.to_netcdf(os.path.join(self.outpath, fname))
